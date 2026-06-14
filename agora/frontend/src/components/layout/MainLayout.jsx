@@ -161,7 +161,7 @@ function SidebarContent({ items, user, unreadCount, onLogout, darkMode, onToggle
       {/* Bas sidebar */}
       <div className="border-t border-gray-200 dark:border-gray-800 pt-4 mt-4 space-y-2">
         {/* Points solidarité */}
-        {console.log(user)}
+        
         {user && !isAdmin && (
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 dark:bg-amber-950">
             <Award size={16} className="text-amber-500" />

@@ -16,6 +16,7 @@ const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
 const FeedPage = lazy(() => import('./pages/user/FeedPage'));
 const PublicationDetailPage = lazy(() => import('./pages/user/PublicationDetailPage'));
 const CreatePublicationPage = lazy(() => import('./pages/user/CreatePublicationPage'));
+const EditPublicationPage = lazy(() => import('./pages/user/EditPublicationPage'));
 const ProfilePage = lazy(() => import('./pages/user/ProfilePage'));
 const HistoryPage = lazy(() => import('./pages/user/HistoryPage'));
 const NotificationsPage = lazy(() => import('./pages/user/NotificationsPage'));
@@ -72,6 +73,7 @@ export default function App() {
             <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
               <Route path="/" element={<FeedPage />} />
               <Route path="/publications/:id" element={<PublicationDetailPage />} />
+              <Route path="/publications/:id/edit" element={<EditPublicationPage />} />
               <Route path="/publications/new" element={<CreatePublicationPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/profile/:pseudonyme" element={<ProfilePage />} />

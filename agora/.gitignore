@@ -1,0 +1,10 @@
+frontend/package-lock.json
+frontend/package.json
+frontend/node_modules/
+frontend/.env
+frontend/vite.config.js
+frontend/tailwind.config.js
+package-lock.json
+backend/agora/settings.py
+backend/pipfile
+backend/pipfile.lock

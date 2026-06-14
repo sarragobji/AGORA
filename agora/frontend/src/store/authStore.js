@@ -88,7 +88,7 @@ const useAuthStore = create(
       refreshUser: async () => {
         try {
           const res = await userService.getMe();
-          set({ user: normalizeUser(res.data.data) });
+          set({ user: normalizeUser(res.data.data || res.data) });
         } catch {}
       },
 

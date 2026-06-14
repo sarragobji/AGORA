@@ -123,6 +123,7 @@ class PublicationViewSet(viewsets.ModelViewSet):
                 publication=publication,
             )
             publication.auteur.award_points(1)
+            request.user.award_points(1)
 
         return Response({
             'success': True,

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { EyeOff, X, Plus, Loader2 } from 'lucide-react';
 import { publicationService, categoryService, tagService } from '../../services/api';
+import useAuthStore from '../../store/authStore';
 import toast from 'react-hot-toast';
 
 export default function CreatePublicationPage() {
@@ -21,9 +22,12 @@ export default function CreatePublicationPage() {
     select: (res) => res.data.results || res.data,
   });
 
+  const refreshUser = useAuthStore((state) => state.refreshUser);
+
   const createMutation = useMutation({
     mutationFn: (data) => publicationService.create(data),
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
+      await refreshUser();
       toast.success('Publication créée ! ✨');
       const pubId = res.data?.data?.id;
       navigate(pubId ? `/publications/${pubId}` : '/');

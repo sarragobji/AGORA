@@ -72,7 +72,7 @@ export default function AdminPublicationsPage() {
                   </p>
                 </div>
                 <div className="flex gap-2 flex-shrink-0">
-                  <Link to={`/publications/${pub.id}`} className="p-1.5 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950 rounded transition" title="Voir">
+                  <Link to={`/admin/publications/${pub.id}`} className="p-1.5 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950 rounded transition" title="Voir">
                     <Eye size={15} />
                   </Link>
                   {pub.is_active !== false && (

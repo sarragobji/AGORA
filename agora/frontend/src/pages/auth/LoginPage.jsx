@@ -28,7 +28,8 @@ export default function LoginPage() {
     const result = await login(data);
     if (result.success) {
       toast.success('Bienvenue sur L\'Agora !');
-      navigate('/');
+      const isAdmin = result.user?.is_admin || result.user?.role === 'admin';
+      navigate(isAdmin ? '/admin' : '/');
     } else {
       setError('email', { message: result.message });
     }

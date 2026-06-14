@@ -52,7 +52,7 @@ class PublicationListSerializer(serializers.ModelSerializer):
     categorie = CategorySerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     reactions_summary = serializers.SerializerMethodField()
-    comments_count = serializers.IntegerField(read_only=True)
+    comments_count = serializers.SerializerMethodField()
     is_mine = serializers.SerializerMethodField()
 
     class Meta:
@@ -69,6 +69,9 @@ class PublicationListSerializer(serializers.ModelSerializer):
             return {'pseudonyme': 'Anonyme', 'photo_url': None, 'id': None}
         request = self.context.get('request')
         return UserPublicSerializer(obj.auteur, context={'request': request}).data
+
+    def get_comments_count(self, obj):
+        return getattr(obj, 'comments_total', obj.comments.count())
 
     def get_reactions_summary(self, obj):
         reactions = obj.reactions.all()

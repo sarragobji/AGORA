@@ -5,6 +5,18 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { authService, userService } from '../services/api';
 
+const normalizeUser = (user) => {
+  if (!user) return null;
+  const roleName = typeof user.role === 'string'
+    ? user.role
+    : user.role?.role_name || null;
+  return {
+    ...user,
+    role: roleName,
+    is_admin: roleName === 'admin',
+  };
+};
+
 const useAuthStore = create(
   persist(
     (set, get) => ({
@@ -20,12 +32,13 @@ const useAuthStore = create(
           const { data } = res.data;
           localStorage.setItem('access_token', data.access);
           localStorage.setItem('refresh_token', data.refresh);
+          const normalizedUser = normalizeUser(data.user);
           set({
-            user: data.user,
+            user: normalizedUser,
             isAuthenticated: true,
             isLoading: false,
           });
-          return { success: true };
+          return { success: true, user: normalizedUser };
         } catch (err) {
           set({ isLoading: false });
           return {
@@ -43,12 +56,13 @@ const useAuthStore = create(
           const { data } = res.data;
           localStorage.setItem('access_token', data.tokens.access);
           localStorage.setItem('refresh_token', data.tokens.refresh);
+          const normalizedUser = normalizeUser(data.user);
           set({
-            user: data.user,
+            user: normalizedUser,
             isAuthenticated: true,
             isLoading: false,
           });
-          return { success: true };
+          return { success: true, user: normalizedUser };
         } catch (err) {
           set({ isLoading: false });
           return {
@@ -74,12 +88,12 @@ const useAuthStore = create(
       refreshUser: async () => {
         try {
           const res = await userService.getMe();
-          set({ user: res.data.data });
+          set({ user: normalizeUser(res.data.data) });
         } catch {}
       },
 
       // Mettre à jour l'utilisateur local
-      updateUser: (userData) => set({ user: { ...get().user, ...userData } }),
+      updateUser: (userData) => set({ user: normalizeUser({ ...get().user, ...userData }) }),
     }),
     {
       name: 'agora-auth',

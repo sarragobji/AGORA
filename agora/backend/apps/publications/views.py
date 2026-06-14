@@ -60,8 +60,8 @@ class PublicationViewSet(viewsets.ModelViewSet):
         ).prefetch_related(
             'tags', 'reactions', 'comments'
         ).annotate(
-            reactions_count=Count('reactions', distinct=True),
-            comments_count=Count('comments', distinct=True),
+            reactions_total=Count('reactions', distinct=True),
+            comments_total=Count('comments', distinct=True),
         )
         return qs
 

@@ -42,15 +42,18 @@ const ProtectedRoute = ({ children }) => {
 // Garde de route — administrateur
 const AdminRoute = ({ children }) => {
   const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.is_admin || user?.role === 'admin' || user?.role?.role_name === 'admin';
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== 'admin') return <Navigate to="/" replace />;
+  if (!isAdmin) return <Navigate to="/" replace />;
   return children;
 };
 
 // Redirection si déjà connecté
 const PublicRoute = ({ children }) => {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  return isAuthenticated ? <Navigate to="/" replace /> : children;
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.is_admin || user?.role === 'admin' || user?.role?.role_name === 'admin';
+  return isAuthenticated ? <Navigate to={isAdmin ? '/admin' : '/'} replace /> : children;
 };
 
 export default function App() {

@@ -128,7 +128,7 @@ class UserHistoryView(APIView):
         from apps.publications.serializers import PublicationListSerializer, CommentSerializer
 
         user = request.user
-        publications = user.publications.select_related(
+        publications = user.publications.filter(is_active=True).select_related(
             'categorie'
         ).prefetch_related('tags', 'reactions', 'comments').order_by('-created_at')[:20]
 

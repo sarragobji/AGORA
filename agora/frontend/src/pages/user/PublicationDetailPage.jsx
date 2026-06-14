@@ -24,7 +24,7 @@ const REACTIONS = [
 export default function PublicationDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const { user, refreshUser } = useAuthStore();
   const queryClient = useQueryClient();
   const [comment, setComment] = useState('');
   const [editingComment, setEditingComment] = useState(null);
@@ -42,7 +42,10 @@ export default function PublicationDetailPage() {
       }
       return publicationService.react(id, type);
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['publication', id] }),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ['publication', id] });
+      await refreshUser();
+    },
   });
 
   const addCommentMutation = useMutation({

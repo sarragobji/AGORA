@@ -25,7 +25,7 @@ const REACTIONS = [
 export default function PublicationCard({ publication }) {
   const [showMenu, setShowMenu] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
-  const { user } = useAuthStore();
+  const { user, refreshUser } = useAuthStore();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -37,8 +37,9 @@ export default function PublicationCard({ publication }) {
       }
       return publicationService.react(publication.id, type);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ['publications'] });
+      await refreshUser();
     },
     onError: () => toast.error('Erreur lors de la réaction'),
   });

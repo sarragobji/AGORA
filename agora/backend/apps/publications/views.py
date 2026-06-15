@@ -82,14 +82,18 @@ class PublicationViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         pub = serializer.save(auteur=self.request.user)
         # Attribuer des points de solidarité
-        self.request.user.award_points(5)
+        self.request.user.award_points(10)
         return pub
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.increment_views()
-        serializer = self.get_serializer(instance)
-        return Response({'success': True, 'data': serializer.data})
+    def perform_destroy(self, instance):
+        publication_author = instance.auteur
+        publication_author.points_solidarite = max(
+            publication_author.points_solidarite - 10,
+            0
+        )
+        publication_author.save(update_fields=['points_solidarite'])
+        instance.delete()
+    
 
     @action(detail=True, methods=['post', 'delete'], permission_classes=[permissions.IsAuthenticated])
     def react(self, request, pk=None):

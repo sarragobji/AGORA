@@ -28,6 +28,22 @@ const adminItems = [
   { to: '/admin/signalements', icon: Flag, label: 'Signalements' },
 ];
 
+const badgeLabels = {
+  nouveau_membre: 'Nouveau membre',
+  etudiant_actif: 'Étudiant actif',
+  etudiant_solidaire: 'Étudiant solidaire',
+  mentor: 'Mentor',
+  expert: 'Expert',
+};
+
+const badgeIconSizes = {
+  nouveau_membre: 10,
+  etudiant_actif: 12,
+  etudiant_solidaire: 14,
+  mentor: 16,
+  expert: 18,
+};
+
 export default function MainLayout({ isAdmin }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(
@@ -163,12 +179,24 @@ function SidebarContent({ items, user, unreadCount, onLogout, darkMode, onToggle
         {/* Points solidarité */}
         
         {user && !isAdmin && (
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 dark:bg-amber-950">
-            <Award size={16} className="text-amber-500" />
-            <span className="text-sm text-amber-700 dark:text-amber-400 font-medium">
-              
-              {user.points_solidarite} points
-            </span>
+          <div className="flex flex-col gap-1 px-3 py-2 rounded-lg bg-amber-50 dark:bg-amber-950">
+            <div className="flex items-center gap-2">
+              <Award size={16} className="text-amber-500" />
+              <span className="text-sm text-amber-700 dark:text-amber-400 font-medium">
+                {user.points_solidarite} points
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span
+                className="inline-flex items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300"
+                style={{ width: badgeIconSizes[user.badge] || 10, height: badgeIconSizes[user.badge] || 10 }}
+              >
+                <span className="block w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+              </span>
+              <span className="text-xs text-amber-700/80 dark:text-amber-300/80">
+                {badgeLabels[user.badge] || 'Nouveau membre'}
+              </span>
+            </div>
           </div>
         )}
 

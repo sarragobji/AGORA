@@ -8,3 +8,4 @@ package-lock.json
 backend/agora/settings.py
 backend/pipfile
 backend/pipfile.lock
+backend/.env

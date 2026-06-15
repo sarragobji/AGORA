@@ -108,9 +108,14 @@ class AdminPublicationListView(generics.ListAPIView):
     serializer_class = PublicationListSerializer
 
     def get_queryset(self):
-        return Publication.objects.select_related(
+        qs = Publication.objects.select_related(
             'auteur', 'categorie'
         ).prefetch_related('tags', 'reactions', 'comments').order_by('-created_at')
+        # By default, only show active publications in the admin list.
+        include_inactive = self.request.query_params.get('include_inactive')
+        if not (include_inactive and include_inactive.lower() == 'true'):
+            qs = qs.filter(is_active=True)
+        return qs
 
 
 class AdminPublicationDeleteView(APIView):

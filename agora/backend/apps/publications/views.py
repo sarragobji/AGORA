@@ -103,7 +103,7 @@ class PublicationViewSet(viewsets.ModelViewSet):
             )
             if reactions.exists() and publication.auteur != request.user:
                 publication.auteur.points_solidarite = max(
-                    publication.auteur.points_solidarite - 1,
+                    publication.auteur.points_solidarite - 2,
                     0
                 )
                 publication.auteur.save(update_fields=['points_solidarite'])
@@ -129,8 +129,8 @@ class PublicationViewSet(viewsets.ModelViewSet):
                 message=f"{request.user.pseudonyme} a réagi à votre publication \"{publication.titre}\".",
                 publication=publication,
             )
-            publication.auteur.award_points(1)
-            request.user.award_points(1)
+            publication.auteur.award_points(2)
+            request.user.award_points(2)
 
         return Response({
             'success': True,
@@ -203,6 +203,15 @@ class CommentaireViewSet(viewsets.ModelViewSet):
                 message=f"{self.request.user.pseudonyme} a commenté votre publication \"{publication.titre}\".",
                 publication=publication,
             )
-            publication.auteur.award_points(2)
-
+            publication.auteur.award_points(5)
+            self.request.user.award_points(5)
         return comment
+
+    def perform_destroy(self, instance):
+        publication_author = instance.publication.auteur
+        publication_author.points_solidarite = max(
+            publication_author.points_solidarite - 5,
+            0
+        )
+        publication_author.save(update_fields=['points_solidarite'])
+        instance.delete()

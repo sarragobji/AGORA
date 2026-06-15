@@ -6,15 +6,18 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from apps.accounts.models import User
+from apps.accounts.models import User, Message
 from apps.accounts.serializers import (
     RegisterSerializer,
     UserDetailSerializer,
     UserPublicSerializer,
     UpdateProfileSerializer,
     ChangePasswordSerializer,
+    MessageSerializer,
+    MessageCreateSerializer,
     CustomTokenObtainPairSerializer,
 )
 from apps.accounts.permissions import IsOwnerOrAdmin
@@ -147,3 +150,83 @@ class UserHistoryView(APIView):
                 ).data,
             },
         })
+
+
+class UserConversationsView(APIView):
+    """GET /api/v1/users/messages/ — Liste des conversations privées."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        messages = Message.objects.filter(
+            Q(sender=user) | Q(recipient=user)
+        ).select_related('sender', 'recipient').order_by('-created_at')
+
+        conversations = {}
+        unread_count = 0
+
+        for message in messages:
+            partner = message.recipient if message.sender == user else message.sender
+            partner_id = partner.id
+            if partner_id not in conversations:
+                conversations[partner_id] = {
+                    'partner': UserPublicSerializer(partner, context={'request': request}).data,
+                    'last_message': MessageSerializer(message, context={'request': request}).data,
+                    'unread_count': 0,
+                }
+            if message.recipient == user and not message.is_read:
+                conversations[partner_id]['unread_count'] += 1
+                unread_count += 1
+
+        return Response({
+            'success': True,
+            'data': {
+                'unread_count': unread_count,
+                'conversations': list(conversations.values()),
+            },
+        })
+
+
+class UserMessagesView(APIView):
+    """GET/POST /api/v1/users/messages/<pseudonyme>/ — Conversation privée entre utilisateurs."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pseudonyme):
+        recipient = get_object_or_404(User.objects.filter(is_active=True), pseudonyme=pseudonyme)
+        if recipient == request.user:
+            return Response(
+                {'success': False, 'message': 'Vous ne pouvez pas vous envoyer un message.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        messages = Message.objects.filter(
+            Q(sender=request.user, recipient=recipient) |
+            Q(sender=recipient, recipient=request.user)
+        ).select_related('sender', 'recipient').order_by('created_at')
+
+        messages.filter(recipient=request.user, is_read=False).update(is_read=True)
+
+        return Response({
+            'success': True,
+            'data': {
+                'recipient': UserPublicSerializer(recipient, context={'request': request}).data,
+                'messages': MessageSerializer(messages, many=True, context={'request': request}).data,
+            },
+        })
+
+    def post(self, request, pseudonyme):
+        recipient = get_object_or_404(User.objects.filter(is_active=True), pseudonyme=pseudonyme)
+        if recipient == request.user:
+            return Response(
+                {'success': False, 'message': 'Vous ne pouvez pas vous envoyer un message.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = MessageCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        message = serializer.save(sender=request.user, recipient=recipient)
+
+        return Response(
+            {'success': True, 'data': MessageSerializer(message, context={'request': request}).data},
+            status=status.HTTP_201_CREATED,
+        )

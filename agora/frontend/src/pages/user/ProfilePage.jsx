@@ -2,9 +2,9 @@
  * L'Agora - Page Profil
  */
 import React, { useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Camera, Award, Edit3, Save, X, Loader2 } from 'lucide-react';
+import { Camera, Award, Edit3, Save, X, Loader2, MessageCircle } from 'lucide-react';
 import { userService } from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
@@ -136,11 +136,21 @@ export default function ProfilePage() {
                 ) : isOwn ? (
                   <p className="text-sm text-gray-400 mt-2 italic">Ajoutez une bio pour vous présenter...</p>
                 ) : null}
-                {isOwn && (
-                  <button onClick={startEdit} className="mt-3 flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:underline">
-                    <Edit3 size={12} /> Modifier le profil
-                  </button>
-                )}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {!isOwn && (
+                    <Link
+                      to={`/messages/${profile.pseudonyme}`}
+                      className="inline-flex items-center gap-1 text-xs text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-lg transition"
+                    >
+                      <MessageCircle size={12} /> Envoyer un message
+                    </Link>
+                  )}
+                  {isOwn && (
+                    <button onClick={startEdit} className="flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:underline">
+                      <Edit3 size={12} /> Modifier le profil
+                    </button>
+                  )}
+                </div>
               </>
             )}
           </div>

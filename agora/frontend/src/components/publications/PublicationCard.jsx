@@ -67,34 +67,53 @@ export default function PublicationCard({ publication }) {
     <article className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 transition-colors overflow-hidden">
       {/* En-tête */}
       <div className="p-4 pb-0 flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          {/* Avatar */}
-          <div className="w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-sm flex-shrink-0">
-            {publication.is_anonymous
-              ? <EyeOff size={16} />
-              : (publication.auteur?.pseudonyme?.[0]?.toUpperCase() || <User size={16} />)
-            }
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              {publication.is_anonymous ? 'Anonyme' : (publication.auteur?.pseudonyme || 'Utilisateur')}
-            </p>
-            <div className="flex items-center gap-2 text-xs text-gray-400">
-              <span>{formatDistanceToNow(new Date(publication.created_at), { addSuffix: true, locale: fr })}</span>
-              {publication.categorie && (
-                <>
-                  <span>·</span>
-                  <span
-                    className="px-1.5 py-0.5 rounded text-white text-xs font-medium"
-                    style={{ backgroundColor: publication.categorie.couleur }}
-                  >
-                    {publication.categorie.icone} {publication.categorie.nom}
-                  </span>
-                </>
-              )}
+        {publication.is_anonymous || !publication.auteur?.pseudonyme ? (
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-sm flex-shrink-0">
+              <EyeOff size={16} />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">Anonyme</p>
+              <div className="flex items-center gap-2 text-xs text-gray-400">
+                <span>{formatDistanceToNow(new Date(publication.created_at), { addSuffix: true, locale: fr })}</span>
+                {publication.categorie && (
+                  <>
+                    <span>·</span>
+                    <span
+                      className="px-1.5 py-0.5 rounded text-white text-xs font-medium"
+                      style={{ backgroundColor: publication.categorie.couleur }}
+                    >
+                      {publication.categorie.icone} {publication.categorie.nom}
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <Link to={`/profile/${publication.auteur.pseudonyme}`} className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+            <div className="w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-sm flex-shrink-0">
+              {publication.auteur.pseudonyme?.[0]?.toUpperCase() || <User size={16} />}
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">{publication.auteur.pseudonyme}</p>
+              <div className="flex items-center gap-2 text-xs text-gray-400">
+                <span>{formatDistanceToNow(new Date(publication.created_at), { addSuffix: true, locale: fr })}</span>
+                {publication.categorie && (
+                  <>
+                    <span>·</span>
+                    <span
+                      className="px-1.5 py-0.5 rounded text-white text-xs font-medium"
+                      style={{ backgroundColor: publication.categorie.couleur }}
+                    >
+                      {publication.categorie.icone} {publication.categorie.nom}
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+          </Link>
+        )}
 
         {/* Menu */}
         <div className="relative">

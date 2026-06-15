@@ -4,7 +4,7 @@ L'Agora - Serializers Accounts
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.password_validation import validate_password
-from apps.accounts.models import User, Role
+from apps.accounts.models import User, Role, Message
 
 
 class RoleSerializer(serializers.ModelSerializer):
@@ -128,6 +128,22 @@ class ChangePasswordSerializer(serializers.Serializer):
         if not user.check_password(value):
             raise serializers.ValidationError('Mot de passe actuel incorrect.')
         return value
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    sender = UserPublicSerializer(read_only=True)
+    recipient = UserPublicSerializer(read_only=True)
+
+    class Meta:
+        model = Message
+        fields = ['id', 'sender', 'recipient', 'contenu', 'is_read', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'sender', 'recipient', 'is_read', 'created_at', 'updated_at']
+
+
+class MessageCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['contenu']
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

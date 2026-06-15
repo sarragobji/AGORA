@@ -73,6 +73,9 @@ export const userService = {
   changePassword: (data) => api.post('/users/me/change-password/', data),
   getHistory: () => api.get('/users/me/history/'),
   getPublicProfile: (pseudonyme) => api.get(`/users/${pseudonyme}/`),
+  getConversations: () => api.get('/users/messages/'),
+  getConversation: (pseudonyme) => api.get(`/users/messages/${pseudonyme}/`),
+  sendMessage: (pseudonyme, data) => api.post(`/users/messages/${pseudonyme}/`, data),
 };
 
 export const publicationService = {

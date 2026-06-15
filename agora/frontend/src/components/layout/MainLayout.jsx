@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
   Home, PlusSquare, Bell, User, BookOpen, LogOut,
-  LayoutDashboard, Users, FileText, Flag, Menu, X,
+  MessageCircle, LayoutDashboard, Users, FileText, Flag, Menu, X,
   ChevronDown, Award, Moon, Sun,
 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
@@ -16,6 +16,7 @@ import toast from 'react-hot-toast';
 const navItems = [
   { to: '/', icon: Home, label: 'Accueil' },
   { to: '/publications/new', icon: PlusSquare, label: 'Publier' },
+  { to: '/messages', icon: MessageCircle, label: 'Messages' },
   { to: '/notifications', icon: Bell, label: 'Notifications' },
   { to: '/profile', icon: User, label: 'Mon profil' },
   { to: '/history', icon: BookOpen, label: 'Historique' },

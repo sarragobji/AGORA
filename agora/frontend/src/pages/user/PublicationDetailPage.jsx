@@ -96,33 +96,34 @@ export default function PublicationDetailPage() {
       {/* Publication */}
       <article className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
         {/* Auteur */}
-        {data.is_anonymous ? (
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">
-              <EyeOff size={18} />
+        <div className="flex items-start justify-between gap-3 mb-4">
+          {data.is_anonymous ? (
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">
+                <EyeOff size={18} />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900 dark:text-white">Anonyme</p>
+                <p className="text-xs text-gray-400">
+                  {formatDistanceToNow(new Date(data.created_at), { addSuffix: true, locale: fr })}
+                  {data.categorie && <span className="ml-2 px-1.5 py-0.5 rounded text-white text-xs font-medium" style={{ backgroundColor: data.categorie.couleur }}>{data.categorie.icone} {data.categorie.nom}</span>}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="font-semibold text-gray-900 dark:text-white">Anonyme</p>
-              <p className="text-xs text-gray-400">
-                {formatDistanceToNow(new Date(data.created_at), { addSuffix: true, locale: fr })}
-                {data.categorie && <span className="ml-2 px-1.5 py-0.5 rounded text-white text-xs font-medium" style={{ backgroundColor: data.categorie.couleur }}>{data.categorie.icone} {data.categorie.nom}</span>}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <Link to={`/profile/${data.auteur?.pseudonyme}`} className="flex items-center gap-3 mb-4 hover:opacity-90 transition-opacity">
-            <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">
-              {data.auteur?.pseudonyme?.[0]?.toUpperCase()}
-            </div>
-            <div>
-              <p className="font-semibold text-gray-900 dark:text-white">{data.auteur?.pseudonyme}</p>
-              <p className="text-xs text-gray-400">
-                {formatDistanceToNow(new Date(data.created_at), { addSuffix: true, locale: fr })}
-                {data.categorie && <span className="ml-2 px-1.5 py-0.5 rounded text-white text-xs font-medium" style={{ backgroundColor: data.categorie.couleur }}>{data.categorie.icone} {data.categorie.nom}</span>}
-              </p>
-            </div>
-          </Link>
-        )}
+          ) : (
+            <Link to={`/profile/${data.auteur?.pseudonyme}`} className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+              <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">
+                {data.auteur?.pseudonyme?.[0]?.toUpperCase()}
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900 dark:text-white">{data.auteur?.pseudonyme}</p>
+                <p className="text-xs text-gray-400">
+                  {formatDistanceToNow(new Date(data.created_at), { addSuffix: true, locale: fr })}
+                  {data.categorie && <span className="ml-2 px-1.5 py-0.5 rounded text-white text-xs font-medium" style={{ backgroundColor: data.categorie.couleur }}>{data.categorie.icone} {data.categorie.nom}</span>}
+                </p>
+              </div>
+            </Link>
+          )}
           {isOwner && (
             <div className="ml-auto flex gap-2">
               <button

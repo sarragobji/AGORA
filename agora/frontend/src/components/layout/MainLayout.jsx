@@ -56,7 +56,7 @@ export default function MainLayout({ isAdmin }) {
   };
 
   const items = isAdmin ? adminItems : navItems;
-  console.log(isAdmin);
+  
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex">
       {/* Sidebar desktop */}

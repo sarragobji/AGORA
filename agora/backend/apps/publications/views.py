@@ -97,10 +97,17 @@ class PublicationViewSet(viewsets.ModelViewSet):
         publication = self.get_object()
 
         if request.method == 'DELETE':
-            Reaction.objects.filter(
+            reactions = Reaction.objects.filter(
                 publication=publication,
                 utilisateur=request.user
-            ).delete()
+            )
+            if reactions.exists() and publication.auteur != request.user:
+                publication.auteur.points_solidarite = max(
+                    publication.auteur.points_solidarite - 1,
+                    0
+                )
+                publication.auteur.save(update_fields=['points_solidarite'])
+            reactions.delete()
             return Response({'success': True, 'message': 'Réaction retirée.'})
 
         reaction_type = request.data.get('type')

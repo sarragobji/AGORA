@@ -167,6 +167,7 @@ class ReactionSerializer(serializers.ModelSerializer):
 
 class SignalementSerializer(serializers.ModelSerializer):
     utilisateur = UserPublicSerializer(read_only=True)
+    publication = serializers.PrimaryKeyRelatedField(read_only=True)
     publication_titre = serializers.CharField(source='publication.titre', read_only=True)
 
     class Meta:
@@ -176,4 +177,4 @@ class SignalementSerializer(serializers.ModelSerializer):
             'utilisateur', 'motif', 'description',
             'statut', 'created_at', 'updated_at',
         ]
-        read_only_fields = ['id', 'utilisateur', 'statut', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'publication', 'utilisateur', 'statut', 'created_at', 'updated_at']

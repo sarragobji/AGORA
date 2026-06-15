@@ -44,6 +44,7 @@ export default function PublicationDetailPage() {
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ['publication', id] });
+      queryClient.invalidateQueries({ queryKey: ['publications'] });
       await refreshUser();
     },
   });

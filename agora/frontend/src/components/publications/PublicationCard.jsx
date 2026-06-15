@@ -39,6 +39,7 @@ export default function PublicationCard({ publication }) {
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ['publications'] });
+      queryClient.invalidateQueries({ queryKey: ['publication', publication.id] });
       await refreshUser();
     },
     onError: () => toast.error('Erreur lors de la réaction'),

@@ -24,7 +24,9 @@ export default function AdminPublicationsPage() {
   const deleteMutation = useMutation({
     mutationFn: (id) => adminService.deletePublication(id),
     onSuccess: () => {
+      // Ensure all admin-publications caches are refreshed (with and without search key)
       queryClient.invalidateQueries({ queryKey: ['admin-publications'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-publications', search] });
       toast.success('Publication retirée');
     },
     onError: () => toast.error('Erreur'),

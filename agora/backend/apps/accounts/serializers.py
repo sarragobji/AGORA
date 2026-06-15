@@ -22,7 +22,7 @@ class UserPublicSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'pseudonyme', 'photo_url',
-            'points_solidarite', 'role', 'created_at',
+            'points_solidarite', 'badge', 'role', 'created_at',
         ]
 
     def get_photo_url(self, obj):
@@ -44,7 +44,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'pseudonyme', 'first_name', 'last_name',
             'email', 'photo', 'photo_url', 'bio',
-            'points_solidarite', 'is_active', 'role',
+            'points_solidarite', 'badge', 'is_active', 'role',
             'publications_count', 'comments_count',
             'created_at', 'updated_at',
         ]
@@ -150,5 +150,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             'email': user.email,
             'role': user.role.role_name if user.role else None,
             'points_solidarite': user.points_solidarite,
+            'badge': user.badge,
         }
         return data

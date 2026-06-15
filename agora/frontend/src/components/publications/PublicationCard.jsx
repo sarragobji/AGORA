@@ -47,9 +47,10 @@ export default function PublicationCard({ publication }) {
 
   const deleteMutation = useMutation({
     mutationFn: () => publicationService.delete(publication.id),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success('Publication supprimée');
       queryClient.invalidateQueries({ queryKey: ['publications'] });
+      await refreshUser();
     },
     onError: () => toast.error('Erreur lors de la suppression'),
   });

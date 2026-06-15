@@ -69,6 +69,26 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     bio = models.TextField(blank=True, max_length=500)
     points_solidarite = models.PositiveIntegerField(default=0)
+
+    NOUVEAU_MEMBRE = 'nouveau_membre'
+    ETUDIANT_ACTIF = 'etudiant_actif'
+    ETUDIANT_SOLIDAIRE = 'etudiant_solidaire'
+    MENTOR = 'mentor'
+    EXPERT = 'expert'
+
+    BADGE_CHOICES = [
+        (NOUVEAU_MEMBRE, 'Nouveau membre'),
+        (ETUDIANT_ACTIF, 'Étudiant actif'),
+        (ETUDIANT_SOLIDAIRE, 'Étudiant solidaire'),
+        (MENTOR, 'Mentor'),
+        (EXPERT, 'Expert'),
+    ]
+    badge = models.CharField(
+        max_length=30,
+        choices=BADGE_CHOICES,
+        default=NOUVEAU_MEMBRE,
+    )
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     role = models.ForeignKey(
@@ -102,6 +122,22 @@ class User(AbstractBaseUser, PermissionsMixin):
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
 
+    @classmethod
+    def compute_badge_from_points(cls, points: int):
+        if points < 200:
+            return cls.NOUVEAU_MEMBRE
+        if points < 400:
+            return cls.ETUDIANT_ACTIF
+        if points < 600:
+            return cls.ETUDIANT_SOLIDAIRE
+        if points < 800:
+            return cls.MENTOR
+        return cls.EXPERT
+
+    @property
+    def badge_display(self):
+        return self.get_badge_display()
+
     @property
     def is_admin(self):
         return self.role and self.role.role_name == Role.ADMIN
@@ -113,4 +149,5 @@ class User(AbstractBaseUser, PermissionsMixin):
     def award_points(self, points: int):
         """Ajouter des points de solidarité à l'utilisateur."""
         self.points_solidarite += points
-        self.save(update_fields=['points_solidarite'])
+        self.badge = self.compute_badge_from_points(self.points_solidarite)
+        self.save(update_fields=['points_solidarite', 'badge'])

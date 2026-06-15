@@ -28,11 +28,12 @@ export default function PublicationDetailPage() {
   const queryClient = useQueryClient();
   const [comment, setComment] = useState('');
   const [editingComment, setEditingComment] = useState(null);
+  
 
   const { data, isLoading } = useQuery({
     queryKey: ['publication', id],
     queryFn: () => publicationService.get(id),
-    select: (res) => res.data.data,
+    select: (res) => res.data.data || res.data,
   });
 
   const reactMutation = useMutation({

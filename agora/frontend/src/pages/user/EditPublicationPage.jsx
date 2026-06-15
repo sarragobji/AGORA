@@ -26,7 +26,7 @@ export default function EditPublicationPage() {
   const { data: publicationData, isLoading: isLoadingPublication, isError } = useQuery({
     queryKey: ['publication', id],
     queryFn: () => publicationService.get(id),
-    select: (res) => res.data.data,
+    select: (res) => res.data.data || res.data,
     enabled: Boolean(id),
   });
 

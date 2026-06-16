@@ -52,28 +52,31 @@ export default function PublicationDetailPage() {
 
   const addCommentMutation = useMutation({
     mutationFn: (contenu) => commentService.create(id, { contenu }),
-    onSuccess: () => {
+    onSuccess: async () => {
       setComment('');
       queryClient.invalidateQueries({ queryKey: ['publication', id] });
       toast.success('Commentaire ajouté');
+      await refreshUser();
     },
     onError: () => toast.error('Erreur lors de l\'ajout du commentaire'),
   });
 
   const updateCommentMutation = useMutation({
     mutationFn: ({ commentId, contenu }) => commentService.update(id, commentId, { contenu }),
-    onSuccess: () => {
+    onSuccess: async () => {
       setEditingComment(null);
       queryClient.invalidateQueries({ queryKey: ['publication', id] });
       toast.success('Commentaire modifié');
+      await refreshUser();
     },
   });
 
   const deleteCommentMutation = useMutation({
     mutationFn: (commentId) => commentService.delete(id, commentId),
-    onSuccess: () => {
+    onSuccess: async  () => {
       queryClient.invalidateQueries({ queryKey: ['publication', id] });
       toast.success('Commentaire supprimé');
+      await refreshUser();
     },
   });
 

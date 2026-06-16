@@ -38,7 +38,8 @@ const useAuthStore = create(
             isAuthenticated: true,
             isLoading: false,
           });
-          return { success: true, user: normalizedUser };
+          await get().refreshUser();
+          return { success: true, user: get().user };
         } catch (err) {
           set({ isLoading: false });
           return {

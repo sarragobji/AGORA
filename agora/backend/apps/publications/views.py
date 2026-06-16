@@ -111,6 +111,12 @@ class PublicationViewSet(viewsets.ModelViewSet):
                     0
                 )
                 publication.auteur.save(update_fields=['points_solidarite'])
+
+                request.user.points_solidarite = max(
+                    request.user.points_solidarite - 2,
+                    0
+                )
+                request.user.save(update_fields=['points_solidarite'])
             reactions.delete()
             return Response({'success': True, 'message': 'Réaction retirée.'})
 
@@ -217,5 +223,10 @@ class CommentaireViewSet(viewsets.ModelViewSet):
             publication_author.points_solidarite - 5,
             0
         )
+        self.request.user.points_solidarite = max(
+            self.request.user.points_solidarite - 5,
+            0
+        )
         publication_author.save(update_fields=['points_solidarite'])
+        self.request.user.save(update_fields=['points_solidarite'])
         instance.delete()

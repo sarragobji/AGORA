@@ -1,13 +1,14 @@
 /**
  * L'Agora - Feed Principal
  */
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Search, Filter, PlusCircle, TrendingUp } from 'lucide-react';
 import { publicationService, categoryService } from '../../services/api';
 import PublicationCard from '../../components/publications/PublicationCard';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import useAuthStore from '../../store/authStore';
 
 export default function FeedPage() {
   const [search, setSearch] = useState('');
@@ -21,6 +22,8 @@ export default function FeedPage() {
     select: (res) => res.data.results || res.data,
   });
 
+  const currentUser = useAuthStore((state) => state.user);
+
   const { data: feedData, isLoading, isFetching } = useQuery({
     queryKey: ['publications', search, selectedCategory, ordering, page],
     queryFn: () => publicationService.list({
@@ -32,9 +35,52 @@ export default function FeedPage() {
     keepPreviousData: true,
   });
 
-  const publications = feedData?.data?.results || [];
+  const rawPublications = feedData?.data?.results || [];
   const totalCount = feedData?.data?.count || 0;
   const totalPages = Math.ceil(totalCount / 15);
+
+  const publications = useMemo(() => {
+    if (!currentUser?.bio) {
+      return rawPublications;
+    }
+
+    const keywords = currentUser.bio
+      .toLowerCase()
+      .split(/[^\p{L}0-9]+/u)
+      .filter(Boolean);
+
+    if (keywords.length === 0) {
+      return rawPublications;
+    }
+
+    const keywordSet = new Set(keywords);
+
+    const scorePublication = (publication) => {
+      const text = [publication.titre, publication.contenu, ...(publication.tags || []).map((tag) => tag.nom)]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
+      let score = 0;
+      keywordSet.forEach((keyword) => {
+        if (text.includes(keyword)) {
+          score += 1;
+        }
+      });
+      return score;
+    };
+
+    return [...rawPublications].sort((a, b) => {
+      const scoreA = scorePublication(a);
+      const scoreB = scorePublication(b);
+
+      if (scoreA !== scoreB) {
+        return scoreB - scoreA;
+      }
+
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+  }, [currentUser?.bio, rawPublications]);
 
   return (
     <div className="space-y-6">

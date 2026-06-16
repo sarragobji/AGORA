@@ -167,5 +167,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             'role': user.role.role_name if user.role else None,
             'points_solidarite': user.points_solidarite,
             'badge': user.badge,
+            'bio': user.bio,
         }
         return data

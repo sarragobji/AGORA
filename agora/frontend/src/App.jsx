@@ -8,12 +8,14 @@ import { Toaster } from 'react-hot-toast';
 import useAuthStore from './store/authStore';
 import MainLayout from './components/layout/MainLayout';
 import AuthLayout from './components/layout/AuthLayout';
+import HomepageLayout from './components/layout/HomepageLayout';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
 // Lazy loading des pages
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
 const FeedPage = lazy(() => import('./pages/user/FeedPage'));
+const HomePage = lazy(() => import('./pages/HomePage'));
 const PublicationDetailPage = lazy(() => import('./pages/user/PublicationDetailPage'));
 const CreatePublicationPage = lazy(() => import('./pages/user/CreatePublicationPage'));
 const EditPublicationPage = lazy(() => import('./pages/user/EditPublicationPage'));
@@ -51,12 +53,18 @@ const AdminRoute = ({ children }) => {
   return children;
 };
 
-// Redirection si déjà connecté
+// Redirection si déjà connecté (pour auth pages)
 const PublicRoute = ({ children }) => {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const user = useAuthStore((s) => s.user);
   const isAdmin = user?.is_admin || user?.role === 'admin' || user?.role?.role_name === 'admin';
-  return isAuthenticated ? <Navigate to={isAdmin ? '/admin' : '/'} replace /> : children;
+  return isAuthenticated ? <Navigate to={isAdmin ? '/admin' : '/feed'} replace /> : children;
+};
+
+// Redirection si authentifié sur homepage
+const HomeRoute = ({ children }) => {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  return isAuthenticated ? <Navigate to="/feed" replace /> : children;
 };
 
 export default function App() {
@@ -71,9 +79,14 @@ export default function App() {
               <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
             </Route>
 
+            {/* Homepage (public) - redirect authenticated users to feed */}
+            <Route element={<HomepageLayout />}>
+              <Route path="/" element={<HomeRoute><HomePage /></HomeRoute>} />
+            </Route>
+
             {/* Routes protégées (utilisateur) */}
             <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
-              <Route path="/" element={<FeedPage />} />
+              <Route path="/feed" element={<FeedPage />} />
               <Route path="/publications/:id" element={<PublicationDetailPage />} />
               <Route path="/publications/:id/edit" element={<EditPublicationPage />} />
               <Route path="/publications/new" element={<CreatePublicationPage />} />

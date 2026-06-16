@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Home } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import toast from 'react-hot-toast';
 
@@ -29,7 +29,7 @@ export default function LoginPage() {
     if (result.success) {
       toast.success('Bienvenue sur L\'Agora !');
       const isAdmin = result.user?.is_admin || result.user?.role === 'admin';
-      navigate(isAdmin ? '/admin' : '/');
+      navigate(isAdmin ? '/admin' : '/feed');
     } else {
       setError('email', { message: result.message });
     }
@@ -37,6 +37,13 @@ export default function LoginPage() {
 
   return (
     <div>
+      <Link
+        to="/"
+        className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all mb-6 group"
+        title="Retour à l'accueil"
+      >
+        <Home size={20} className="group-hover:scale-110 transition-transform" />
+      </Link>
       <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Connexion</h2>
       <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
         Content de vous revoir ! Entrez vos identifiants.
